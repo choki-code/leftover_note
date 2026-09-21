@@ -12,4 +12,6 @@ Rails.application.routes.draw do
 
   # Defines the root path route ("/")
   # root "posts#index"
+  resources :dishes, except: %i[show destroy]
+  root "dishes#index"
 end

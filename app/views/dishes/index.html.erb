@@ -1,0 +1,31 @@
+<h1>料理マスタ</h1>
+<p class="page-note">献立で選ぶ料理をここに登録します。料理名は手入力せず、この一覧から選びます（表記ゆれを防ぐため）。</p>
+
+<div class="actions">
+  <%= link_to "新しい料理を登録する", new_dish_path, class: "btn" %>
+</div>
+
+<% if @dishes.empty? %>
+  <p class="empty">まだ料理がありません。先に料理を登録してください。</p>
+<% else %>
+  <div class="table-scroll card">
+    <table>
+      <thead>
+        <tr>
+          <th>区分</th>
+          <th>料理名</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @dishes.each do |dish| %>
+          <tr>
+            <td><span class="badge"><%= dish.category %></span></td>
+            <td><%= dish.name %></td>
+            <td><%= link_to "編集", edit_dish_path(dish) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

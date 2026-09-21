@@ -45,6 +45,11 @@ RSpec.configure do |config|
   # instead of true.
   config.use_transactional_fixtures = true
   config.include FactoryBot::Syntax::Methods
+
+  # devise の sign_in / sign_out をテストから使えるようにする。
+  # request spec と system spec で読み込むモジュールが違う。
+  config.include Devise::Test::IntegrationHelpers, type: :request
+  config.include Devise::Test::IntegrationHelpers, type: :system
   # You can uncomment this line to turn off ActiveRecord support entirely.
   # config.use_active_record = false
 
