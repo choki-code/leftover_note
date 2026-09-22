@@ -1,0 +1,53 @@
+ja:
+  activerecord:
+    models:
+      user: ユーザー
+      dish: 料理
+    attributes:
+      user:
+        email: メールアドレス
+        password: パスワード
+        password_confirmation: パスワード（確認）
+        current_password: 現在のパスワード
+        remember_me: ログイン状態を保持する
+        school_name: 学校名
+        academic_year: 年度
+        current_enrollment: 全校児童数（在籍数）
+      dish:
+        user: ユーザー
+        name: 料理名
+        category: 区分
+        deleted_at: 削除日時
+    errors:
+      models:
+        dish:
+          attributes:
+            name:
+              taken: はすでに登録されています
+
+  # 区分の表示名。DB には英語の文字列が入っているので、出すときにここを引く
+  enums:
+    dish:
+      category:
+        staple_food: 主食
+        main_dish: 主菜
+        side_dish: 副菜
+        soup: 汁物
+        dessert: デザート
+
+  errors:
+    summary:
+      one: 入力に1件の誤りがあります
+      other: 入力に%{count}件の誤りがあります
+
+  helpers:
+    submit:
+      create: 登録する
+      update: 更新する
+      dish:
+        create: この料理を登録する
+        update: この料理を更新する
+
+  dishes:
+    index:
+      title: 料理マスタ

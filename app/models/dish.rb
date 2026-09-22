@@ -14,4 +14,13 @@ class Dish < ApplicationRecord
   validates :name, presence: true, length: { maximum: 50 }
   validates :name, uniqueness: { scope: :user_id, conditions: -> { where(deleted_at: nil) } },
           if: -> { deleted_at.nil? }
+  # 区分の表示名。DB には英語の文字列が入っているので ja.yml を引く
+  def category_label
+    I18n.t("enums.dish.category.#{category}")
+  end
+
+  # フォームの選択肢。[表示名, 値] の配列にする
+  def self.category_options
+    categories.keys.map { |key| [ I18n.t("enums.dish.category.#{key}"), key ] }
+  end
 end
