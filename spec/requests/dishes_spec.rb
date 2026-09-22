@@ -16,10 +16,12 @@ RSpec.describe "料理マスタ", type: :request do
       expect(response.body).to include("まだ料理がありません")
     end
 
-    it "登録済みの料理が一覧に出る" do
+    it "登録済みの料理が、区分の日本語つきで一覧に出る" do
       user.dishes.create!(name: "ひじきの煮物", category: "side_dish")
       get dishes_path
       expect(response.body).to include("ひじきの煮物")
+      expect(response.body).to include("副菜")
+      expect(response.body).not_to include("side_dish")
     end
 
     it "論理削除した料理は一覧に出ない" do
@@ -44,16 +46,17 @@ RSpec.describe "料理マスタ", type: :request do
       expect(user.dishes.alive.pluck(:name)).to eq([ "カレー" ])
     end
 
-    it "同じ名前は登録できず、フォームに理由が出る" do
+    it "同じ名前は登録できず、フォームに日本語で理由が出る" do
       user.dishes.create!(name: "カレー", category: "main_dish")
       post dishes_path, params: { dish: { name: "カレー", category: "soup" } }
-      expect(response).to have_http_status(:unprocessable_entity)
-      expect(response.body).to include("エラー")
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("入力に1件の誤りがあります")
+      expect(response.body).to include("料理名はすでに登録されています")
     end
 
     it "名前が空なら登録できない" do
       post dishes_path, params: { dish: { name: "", category: "soup" } }
-      expect(response).to have_http_status(:unprocessable_entity)
+      expect(response).to have_http_status(:unprocessable_content)
     end
   end
 

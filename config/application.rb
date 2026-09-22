@@ -23,5 +23,12 @@ module LeftoverNote
     #
     # config.time_zone = "Central Time (US & Canada)"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # 画面とエラー文はすべて日本語（6-C）
+    config.i18n.default_locale = :ja
+    config.i18n.available_locales = %i[ja en]
+    # config/locales 直下だけでなく、サブディレクトリの yml も読む
+    config.i18n.load_path += Dir[Rails.root.join("config/locales/**/*.{rb,yml}")]
+    config.time_zone = "Tokyo"
   end
 end

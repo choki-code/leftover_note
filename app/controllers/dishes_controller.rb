@@ -16,7 +16,7 @@ class DishesController < ApplicationController
     if @dish.save
       redirect_to dishes_path, notice: "「#{@dish.name}」を登録しました"
     else
-      render :new, status: :unprocessable_entity
+      render :new, status: :unprocessable_content
     end
   end
 
@@ -24,7 +24,7 @@ class DishesController < ApplicationController
     if @dish.update(dish_params)
       redirect_to dishes_path, notice: "「#{@dish.name}」を更新しました"
     else
-      render :edit, status: :unprocessable_entity
+      render :edit, status: :unprocessable_content
     end
   end
 

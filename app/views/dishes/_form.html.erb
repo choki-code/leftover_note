@@ -1,16 +1,7 @@
 <%# 新規と編集で同じものを使う。form_with は @dish が新規か既存かを見て
     送り先（POST /dishes か PATCH /dishes/:id）を自分で決める %>
 <%= form_with model: dish do |f| %>
-  <% if dish.errors.any? %>
-    <div class="error-summary">
-      <p><%= dish.errors.count %>件のエラーがあります</p>
-      <ul>
-        <% dish.errors.full_messages.each do |message| %>
-          <li><%= message %></li>
-        <% end %>
-      </ul>
-    </div>
-  <% end %>
+  <%= error_summary(dish) %>
 
   <div class="field">
     <%= f.label :name, "料理名" %>
@@ -20,7 +11,7 @@
   <div class="field">
     <%= f.label :category, "区分" %>
     <%# Dish.categories は enum が作るハッシュ。値をそのまま選択肢にする %>
-    <%= f.select :category, Dish.categories.keys, { include_blank: "選んでください" } %>
+    <%= f.select :category, Dish.category_options, { include_blank: "選んでください" } %>
   </div>
 
   <div class="actions">
