@@ -1,0 +1,20 @@
+<h1>この料理を削除しますか</h1>
+
+<div class="card">
+  <p><strong><%= @dish.name %></strong>（<%= @dish.category_label %>）</p>
+
+  <% if @dish.deletable? %>
+    <p>削除すると料理マスタの一覧に出なくなります。過去の献立の記録はそのまま残ります。</p>
+    <div class="actions">
+      <%= button_to "削除する", dish_path(@dish), method: :delete, class: "btn-danger" %>
+      <%= link_to "やめる", dishes_path, class: "linklike" %>
+    </div>
+  <% else %>
+    <p class="flash alert">
+      <%= @dish.undeletable_reason %>
+    </p>
+    <div class="actions">
+      <%= link_to "料理マスタに戻る", dishes_path, class: "linklike" %>
+    </div>
+  <% end %>
+</div>

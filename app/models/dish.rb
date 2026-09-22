@@ -24,9 +24,14 @@ class Dish < ApplicationRecord
     menu_items.empty?
   end
 
+  def undeletable_reason
+    return if deletable?
+    "この料理は献立の記録に使われているため削除できません（#{menu_items.count}件の記録）"
+  end
+
   def soft_delete
     unless deletable?
-      errors.add(:base, "この料理は献立の記録に使われているため削除できません（#{menu_items.count}件の記録）")
+      errors.add(:base, undeletable_reason)
       return false
     end
     update(deleted_at: Time.current)
