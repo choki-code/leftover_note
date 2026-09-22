@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_09_21_074825) do
+ActiveRecord::Schema[8.1].define(version: 2026_09_22_084704) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -23,6 +23,31 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_074825) do
     t.bigint "user_id", null: false
     t.index ["user_id", "name"], name: "index_dishes_on_user_id_and_name_alive", unique: true, where: "(deleted_at IS NULL)"
     t.index ["user_id"], name: "index_dishes_on_user_id"
+  end
+
+  create_table "menu_items", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "dish_id", null: false
+    t.text "items_for_improvement"
+    t.bigint "menu_id", null: false
+    t.decimal "portion_size", precision: 6, scale: 2, null: false
+    t.datetime "updated_at", null: false
+    t.decimal "weight_of_leftovers", precision: 6, scale: 2
+    t.index ["dish_id"], name: "index_menu_items_on_dish_id"
+    t.index ["menu_id", "dish_id"], name: "index_menu_items_on_menu_id_and_dish_id", unique: true
+    t.index ["menu_id"], name: "index_menu_items_on_menu_id"
+  end
+
+  create_table "menus", force: :cascade do |t|
+    t.integer "attendance_count"
+    t.datetime "created_at", null: false
+    t.date "date_provided", null: false
+    t.boolean "excluded_from_stats", default: false, null: false
+    t.text "exclusion_reason"
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["user_id", "date_provided"], name: "index_menus_on_user_id_and_date_provided", unique: true
+    t.index ["user_id"], name: "index_menus_on_user_id"
   end
 
   create_table "users", force: :cascade do |t|
@@ -38,4 +63,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_09_21_074825) do
   end
 
   add_foreign_key "dishes", "users"
+  add_foreign_key "menu_items", "dishes"
+  add_foreign_key "menu_items", "menus"
+  add_foreign_key "menus", "users"
 end
