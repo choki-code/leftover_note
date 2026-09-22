@@ -22,7 +22,10 @@
           <tr>
             <td><span class="badge"><%= dish.category_label %></span></td>
             <td><%= dish.name %></td>
-            <td><%= link_to "編集", edit_dish_path(dish) %></td>
+            <td><%= link_to "編集", edit_dish_path(dish) %>
+            /
+            <%= link_to "削除", confirm_destroy_dish_path(dish) %>
+            </td>
           </tr>
         <% end %>
       </tbody>

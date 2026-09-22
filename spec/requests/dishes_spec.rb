@@ -77,4 +77,61 @@ RSpec.describe "料理マスタ", type: :request do
       expect(response).to have_http_status(:not_found)
     end
   end
+
+  describe "削除" do
+    before { sign_in user }
+
+    let(:dish) { user.dishes.create!(name: "カレー", category: "main_dish") }
+
+    def use_in_menu(dish)
+      menu = user.menus.build(date_provided: Date.new(2026, 9, 14))
+      menu.menu_items.build(dish: dish, portion_size: 20.0)
+      menu.save!
+    end
+
+    # 2-D: いきなり消さず、必ず確認画面を挟む
+    it "確認画面に料理名が出る" do
+      get confirm_destroy_dish_path(dish)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("カレー")
+    end
+
+    # 2-F: 消せない理由は例外（500）ではなく、確認画面の文言で伝える
+    it "献立で使われている料理は、確認画面に消せない理由が出る" do
+      use_in_menu(dish)
+      get confirm_destroy_dish_path(dish)
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("献立の記録に使われているため削除できません")
+    end
+
+    it "削除すると一覧に戻り、一覧から消えるが、行は残る" do
+      delete dish_path(dish)
+      expect(response).to redirect_to(dishes_path)
+      follow_redirect!
+      expect(response.body).not_to include("<td>カレー</td>")
+      expect(dish.reload.deleted_at).to be_present
+    end
+
+    it "献立で使われている料理は、DELETE を送っても消えない" do
+      use_in_menu(dish)
+      delete dish_path(dish)
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("献立の記録に使われているため削除できません")
+      expect(dish.reload.deleted_at).to be_nil
+    end
+
+    # 認可: URL の id を書き換えても他人の料理には触れない
+    it "他人の料理の確認画面は開けない" do
+      other = create(:user).dishes.create!(name: "よその味噌汁", category: "soup")
+      get confirm_destroy_dish_path(other)
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "他人の料理は削除できない" do
+      other = create(:user).dishes.create!(name: "よその味噌汁", category: "soup")
+      delete dish_path(other)
+      expect(response).to have_http_status(:not_found)
+      expect(other.reload.deleted_at).to be_nil
+    end
+  end
 end

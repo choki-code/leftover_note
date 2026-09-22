@@ -1,5 +1,5 @@
 class DishesController < ApplicationController
-  before_action :set_dish, only: [ :edit, :update ]
+  before_action :set_dish, only: [ :edit, :update, :confirm_destroy, :destroy ]
 
   def index
     @dishes = current_user.dishes.alive.order(:name)
@@ -25,6 +25,16 @@ class DishesController < ApplicationController
       redirect_to dishes_path, notice: "「#{@dish.name}」を更新しました"
     else
       render :edit, status: :unprocessable_content
+    end
+  end
+
+  def confirm_destroy; end
+
+  def destroy
+    if @dish.soft_delete
+      redirect_to dishes_path, notice: "「#{@dish.name}」を削除しました（過去の記録は残ります）"
+    else
+      render :confirm_destroy, status: :unprocessable_content
     end
   end
 

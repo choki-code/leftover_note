@@ -1,8 +1,10 @@
+# 料理マスタ　論理削除で消し、記録が紐づいているものは消せない
 class Dish < ApplicationRecord
   belongs_to :user
   has_many :menu_items, dependent: :restrict_with_error
   has_many :menus, through: :menu_items
 
+  # 2-B 区分。DB は string、表示名は config/locales/ja.yml の enums で持つ
   enum :category, {
     staple_food: "staple_food",   # 主食
     main_dish:   "main_dish",     # 主菜
@@ -12,6 +14,28 @@ class Dish < ApplicationRecord
   }, validate: true
 
   scope :alive, -> { where(deleted_at: nil) }
+  scope :deleted, -> { where.not(deleted_at: nil) }
+
+  def deleted?
+    deleted_at.present?
+  end
+
+  def deletable?
+    menu_items.empty?
+  end
+
+  def undeletable_reason
+    return if deletable?
+    "この料理は献立の記録に使われているため削除できません（#{menu_items.count}件の記録）"
+  end
+
+  def soft_delete
+    unless deletable?
+      errors.add(:base, undeletable_reason)
+      return false
+    end
+    update(deleted_at: Time.current)
+  end
 
   validates :name, presence: true, length: { maximum: 50 }
   validates :name, uniqueness: { scope: :user_id, conditions: -> { where(deleted_at: nil) } },
