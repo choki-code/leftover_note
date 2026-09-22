@@ -1,5 +1,7 @@
 class Dish < ApplicationRecord
   belongs_to :user
+  has_many :menu_items, dependent: :restrict_with_error
+  has_many :menus, through: :menu_items
 
   enum :category, {
     staple_food: "staple_food",   # 主食
