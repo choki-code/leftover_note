@@ -91,7 +91,7 @@ RSpec.describe "料理マスタ", type: :request do
 
     # 2-D: いきなり消さず、必ず確認画面を挟む
     it "確認画面に料理名が出る" do
-      get delete_dish_path(dish)
+      get confirm_destroy_dish_path(dish)
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("カレー")
     end
@@ -99,7 +99,7 @@ RSpec.describe "料理マスタ", type: :request do
     # 2-F: 消せない理由は例外（500）ではなく、確認画面の文言で伝える
     it "献立で使われている料理は、確認画面に消せない理由が出る" do
       use_in_menu(dish)
-      get delete_dish_path(dish)
+      get confirm_destroy_dish_path(dish)
       expect(response).to have_http_status(:ok)
       expect(response.body).to include("献立の記録に使われているため削除できません")
     end
@@ -123,7 +123,7 @@ RSpec.describe "料理マスタ", type: :request do
     # 認可: URL の id を書き換えても他人の料理には触れない
     it "他人の料理の確認画面は開けない" do
       other = create(:user).dishes.create!(name: "よその味噌汁", category: "soup")
-      get delete_dish_path(other)
+      get confirm_destroy_dish_path(other)
       expect(response).to have_http_status(:not_found)
     end
 
