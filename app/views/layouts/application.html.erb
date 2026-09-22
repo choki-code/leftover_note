@@ -1,7 +1,7 @@
 <!DOCTYPE html>
-<html>
+<html lang="ja">
   <head>
-    <title><%= content_for(:title) || "Leftover Note" %></title>
+    <title><%= content_for(:title) || "残食ノート" %></title>
     <meta name="viewport" content="width=device-width,initial-scale=1">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="application-name" content="Leftover Note">
@@ -11,19 +11,40 @@
 
     <%= yield :head %>
 
-    <%# Enable PWA manifest for installable apps (make sure to enable in config/routes.rb too!) %>
-    <%#= tag.link rel: "manifest", href: pwa_manifest_path(format: :json) %>
-
     <link rel="icon" href="/icon.png" type="image/png">
     <link rel="icon" href="/icon.svg" type="image/svg+xml">
     <link rel="apple-touch-icon" href="/icon.png">
 
-    <%# Includes all stylesheet files in app/assets/stylesheets %>
     <%= stylesheet_link_tag :app, "data-turbo-track": "reload" %>
     <%= javascript_importmap_tags %>
   </head>
 
   <body>
-    <%= yield %>
+    <header class="site-header">
+      <div class="site-header-inner">
+        <p class="site-title"><%= link_to "残食ノート", root_path %></p>
+        <% if user_signed_in? %>
+          <p class="school-label"><%= current_user.heading_label %></p>
+        <% end %>
+      </div>
+
+      <% if user_signed_in? %>
+        <nav class="site-nav">
+          <%= link_to "料理マスタ", dishes_path %>
+          <%= link_to "学校情報", edit_user_registration_path %>
+          <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "linklike" %>
+        </nav>
+      <% end %>
+    </header>
+
+    <main class="container">
+      <% if notice.present? %><p class="flash notice"><%= notice %></p><% end %>
+      <% if alert.present? %><p class="flash alert"><%= alert %></p><% end %>
+      <%= yield %>
+    </main>
+
+    <footer class="site-footer">
+      <p>残食ノート（2026年9月版）</p>
+    </footer>
   </body>
 </html>
