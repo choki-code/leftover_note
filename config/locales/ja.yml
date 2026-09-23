@@ -3,6 +3,8 @@ ja:
     models:
       user: ユーザー
       dish: 料理
+      menu: 献立
+      menu_item: 品目
     attributes:
       user:
         email: メールアドレス
@@ -18,6 +20,12 @@ ja:
         name: 料理名
         category: 区分
         deleted_at: 削除日時
+      menu:
+        date_provided: 提供日
+        attendance_count: 実食数
+      menu/menu_items:
+        dish: 料理
+        portion_size: 提供量(kg)
     errors:
       models:
         dish:

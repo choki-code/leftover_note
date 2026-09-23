@@ -18,5 +18,8 @@ Rails.application.routes.draw do
     get :confirm_destroy, on: :member   # 2-D 削除前の確認画面
   end
 
+  # 3-A 献立の登録 / 3-F 詳細（一覧は #20、編集・削除は #19 で足す）
+  resources :menus, only: %i[new create show]
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

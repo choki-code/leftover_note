@@ -1,0 +1,28 @@
+<h1><%= l @menu.date_provided, format: :long %>の献立</h1>
+
+<% if @menu.attendance_count.present? %>
+  <p>実食数: <%= @menu.attendance_count %>人</p>
+<% end %>
+
+<div class="table-scroll card">
+  <table>
+    <thead>
+      <tr>
+        <th>料理</th>
+        <th>提供量</th>
+      </tr>
+    </thead>
+    <tbody>
+      <% @menu_items.each do |item| %>
+        <tr>
+          <td><%= item.dish.name %></td>
+          <td><%= item.portion_size %> kg</td>
+        </tr>
+      <% end %>
+    </tbody>
+  </table>
+</div>
+
+<div class="actions">
+  <%= link_to "続けて献立を登録する", new_menu_path %>
+</div>

@@ -1,6 +1,7 @@
 class Menu < ApplicationRecord
   belongs_to :user
   has_many :menu_items, dependent: :destroy
+  accepts_nested_attributes_for :menu_items, reject_if: :all_blank
   has_many :dishes, through: :menu_items
 
   scope :for_stats, -> { where(excluded_from_stats: false) }
