@@ -10,13 +10,22 @@
       <tr>
         <th>料理</th>
         <th>提供量</th>
+        <th>残食量</th>
+        <th>残食率</th>
       </tr>
     </thead>
     <tbody>
       <% @menu_items.each do |item| %>
-        <tr>
+        <tr class="rate-<%= item.rate_level %>">
           <td><%= item.dish.name %></td>
           <td><%= item.portion_size %> kg</td>
+          <% if item.leftover_rate.nil? %>
+            <td>未入力</td>
+            <td>—</td>
+          <% else %>
+            <td><%= item.weight_of_leftovers %> kg</td>
+            <td><%= number_to_percentage(item.leftover_rate * 100, precision: 1) %></td>
+          <% end %>
         </tr>
       <% end %>
     </tbody>

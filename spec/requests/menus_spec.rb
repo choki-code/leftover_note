@@ -1,7 +1,7 @@
 require "rails_helper"
 
-# #16 献立の新規登録（3-A）と、保存後に着く最小の詳細画面。
-# 残食量・残食率・色分けは #17 で詳細画面に足す
+# #16 献立の新規登録（3-A）と、保存後に着く詳細画面。
+# #17 で詳細画面に残食量・残食率・色分け（3-F）を足した
 RSpec.describe "献立", type: :request do
   let(:user) { create(:user) }
   let!(:rice)  { create(:dish, user: user, name: "ごはん", category: "staple_food") }
@@ -113,6 +113,39 @@ RSpec.describe "献立", type: :request do
       other_menu = create(:menu, user: create(:user))
       get menu_path(other_menu)
       expect(response).to have_http_status(:not_found)
+    end
+  end
+
+  describe "詳細（残食量・残食率・色分け）" do
+    before { sign_in user }
+
+    # 境目ちょうどの値で作る: 3/10 = 30%（赤の下限）、1.5/10 = 15%（黄の下限）
+    let!(:menu) do
+      salad = create(:dish, user: user, name: "サラダ")
+      soup  = create(:dish, user: user, name: "スープ")
+      create(:menu, user: user, menu_items: [
+        build(:menu_item, menu: nil, dish: rice,  portion_size: 10, weight_of_leftovers: 3),
+        build(:menu_item, menu: nil, dish: curry, portion_size: 10, weight_of_leftovers: 1.5),
+        build(:menu_item, menu: nil, dish: salad, portion_size: 10, weight_of_leftovers: 1),
+        build(:menu_item, menu: nil, dish: soup,  portion_size: 10, weight_of_leftovers: nil)
+      ])
+    end
+
+    it "品目ごとに提供量・残食量・残食率が出る" do
+      get menu_path(menu)
+      expect(response.body).to include("10.0 kg", "3.0 kg", "30.0%", "15.0%", "10.0%")
+    end
+
+    it "30%以上は赤、15%以上は黄、それ未満は緑の行になる" do
+      get menu_path(menu)
+      assert_select "tr.rate-high td",   text: "ごはん"
+      assert_select "tr.rate-middle td", text: "カレー"
+      assert_select "tr.rate-low td",    text: "サラダ"
+    end
+
+    it "残食が未入力の品は「未入力」と出る" do
+      get menu_path(menu)
+      assert_select "tr.rate-unrecorded td", text: "未入力"
     end
   end
 end
