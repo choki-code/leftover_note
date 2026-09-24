@@ -15,6 +15,22 @@ class Menu < ApplicationRecord
   validate :must_have_at_least_one_item
   validate :dish_must_not_be_duplicated
 
+  # 3-C その日の平均残食率 = 合計残食量 ÷ 合計提供量（品目ごとの率の平均ではない）
+  # 未入力の品目は分母・分子の両方から外す。一部未入力の日も途中の値を出すため
+  def leftover_rate
+    recorded = menu_items.select { |item| item.weight_of_leftovers.present? }
+
+    total_portion = recorded.sum { |item| item.portion_size.to_f }
+    return nil if total_portion.zero?
+
+    recorded.sum { |item| item.weight_of_leftovers.to_f } / total_portion
+  end
+
+  # 3-D 残食が未入力の品目が1つでもあるか
+  def leftovers_missing?
+    menu_items.any? { |item| item.weight_of_leftovers.nil? }
+  end
+
   private
 
   # 同じ料理を2回選ぶと DB の UNIQUE で落ちるので、その前に画面へ返す

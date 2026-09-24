@@ -2,6 +2,10 @@ class MenusController < ApplicationController
   INITIAL_ITEM_ROWS = 5
   before_action :set_menu, only: [ :show ]
 
+  def index
+    @menus = current_user.menus.recent_first.includes(:menu_items)
+  end
+
   def new
     @menu = current_user.menus.new
     prepare_form
