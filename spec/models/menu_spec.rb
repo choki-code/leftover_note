@@ -99,4 +99,51 @@ RSpec.describe Menu, type: :model do
       expect(Menu.recent_first.to_a).to eq([ recent, old ])
     end
   end
+
+  describe "平均残食率（3-C）" do
+    it "合計残食量 ÷ 合計提供量で出す（品目ごとの率の平均ではない）" do
+      menu = build_menu(dishes: 2)
+      menu.menu_items[0].portion_size = 10
+      menu.menu_items[0].weight_of_leftovers = 5   # この品だけなら 50%
+      menu.menu_items[1].weight_of_leftovers = 2   # この品だけなら 10%
+
+      # 率の平均なら 30%。総量ベースなら 7kg ÷ 30kg
+      expect(menu.leftover_rate).to be_within(0.0001).of(7.0 / 30)
+    end
+
+    it "未入力の品目は分母・分子の両方から外す" do
+      menu = build_menu(dishes: 5)
+      [ 5, 5, 5, nil, nil ].each_with_index { |w, i| menu.menu_items[i].weight_of_leftovers = w }
+
+      # 入力済み3品: 15kg ÷ 60kg。全品を分母にすると 15%（低く出る）
+      expect(menu.leftover_rate).to be_within(0.0001).of(0.25)
+    end
+
+    it "残食 0kg は入力済みとして数える" do
+      menu = build_menu(dishes: 2)
+      menu.menu_items[0].weight_of_leftovers = 0
+
+      expect(menu.leftover_rate).to eq(0.0)
+    end
+
+    it "1品も入力していなければ nil" do
+      expect(build_menu(dishes: 3).leftover_rate).to be_nil
+    end
+  end
+
+  describe "残食の未入力（3-D）" do
+    it "1品でも空なら true" do
+      menu = build_menu(dishes: 2)
+      menu.menu_items[0].weight_of_leftovers = 5
+
+      expect(menu.leftovers_missing?).to be true
+    end
+
+    it "全品入力済みなら false" do
+      menu = build_menu(dishes: 2)
+      menu.menu_items.each { |item| item.weight_of_leftovers = 1 }
+
+      expect(menu.leftovers_missing?).to be false
+    end
+  end
 end

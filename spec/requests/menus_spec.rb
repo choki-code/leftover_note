@@ -148,4 +148,49 @@ RSpec.describe "献立", type: :request do
       assert_select "tr.rate-unrecorded td", text: "未入力"
     end
   end
+
+  describe "一覧（3-C / 3-D）" do
+    before { sign_in user }
+
+    # 提供量 20kg の品を、残食の数だけ並べた献立を作る（nil は未入力）
+    def create_menu_with(date, leftovers)
+      menu = user.menus.build(date_provided: date)
+      leftovers.each do |weight|
+        menu.menu_items.build(dish: create(:dish, user: user), portion_size: 20, weight_of_leftovers: weight)
+      end
+      menu.tap(&:save!)
+    end
+
+    it "ログイン後の入口（root）が献立一覧" do
+      get root_path
+      expect(response).to have_http_status(:ok)
+      expect(response.body).to include("献立一覧")
+    end
+
+    it "日付の新しい順に並ぶ" do
+      old = create_menu_with(Date.new(2026, 9, 1), [ 5 ])
+      recent = create_menu_with(Date.new(2026, 9, 30), [ 5 ])
+      get menus_path
+      expect(response.body.index(menu_path(recent))).to be < response.body.index(menu_path(old))
+    end
+
+    it "品数・平均残食率・未入力ありが出る（一部未入力は入力済みの品だけで計算）" do
+      create_menu_with(Date.new(2026, 9, 24), [ 5, 5, nil ])
+      get menus_path
+      expect(response.body).to include("3品", "25.0%", "未入力あり")
+    end
+
+    it "全品入力済みの日は「入力済み」" do
+      create_menu_with(Date.new(2026, 9, 24), [ 5, 3 ])
+      get menus_path
+      expect(response.body).to include("20.0%", "入力済み")
+      expect(response.body).not_to include("未入力あり")
+    end
+
+    it "他人の献立は出ない" do
+      other_menu = create(:menu, user: create(:user))
+      get menus_path
+      expect(response.body).not_to include(menu_path(other_menu))
+    end
+  end
 end
