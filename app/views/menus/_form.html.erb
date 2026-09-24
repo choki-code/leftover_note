@@ -11,6 +11,16 @@
     <%= f.number_field :attendance_count, min: 0 %>
   </div>
 
+  <div class="field">
+    <%= f.check_box :excluded_from_stats %>
+    <%= f.label :excluded_from_stats, "集計対象外にする（学級閉鎖・行事など、いつもと違う日）" %>
+  </div>
+
+  <div class="field">
+    <%= f.label :exclusion_reason %>
+    <%= f.text_field :exclusion_reason, placeholder: "例：学級閉鎖で3クラス欠席" %>
+  </div>
+
   <div class="table-scroll card">
     <table>
       <thead>

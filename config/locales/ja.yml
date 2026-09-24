@@ -23,6 +23,8 @@ ja:
       menu:
         date_provided: 提供日
         attendance_count: 実食数
+        excluded_from_stats: 集計対象外
+        exclusion_reason: 対象外の理由
       menu/menu_items:
         dish: 料理
         portion_size: 提供量(kg)
