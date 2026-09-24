@@ -18,7 +18,10 @@
       <tbody>
         <% @menu_items.each do |item| %>
           <tr class="rate-<%= item.rate_level %>">
-            <td><%= link_to l(item.menu.date_provided, format: :long), menu_path(item.menu) %></td>
+            <td>
+              <%= link_to l(item.menu.date_provided, format: :long), menu_path(item.menu) %>
+              <% if item.menu.excluded_from_stats? %><span class="badge">対象外</span><% end %>
+            </td>
             <td><%= item.portion_size %> kg</td>
             <% if item.leftover_rate.nil? %>
               <td>未入力</td>
