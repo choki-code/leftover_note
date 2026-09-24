@@ -14,7 +14,7 @@ Rails.application.routes.draw do
 
   root "menus#index"
 
-  resources :dishes, except: %i[show] do
+  resources :dishes do
     get :confirm_destroy, on: :member   # 2-D 削除前の確認画面
   end
 

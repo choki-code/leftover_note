@@ -1,5 +1,5 @@
 class DishesController < ApplicationController
-  before_action :set_dish, only: [ :edit, :update, :confirm_destroy, :destroy ]
+  before_action :set_dish, only: [ :show, :edit, :update, :confirm_destroy, :destroy ]
 
   def index
     @dishes = current_user.dishes.alive.order(:name)
@@ -7,6 +7,10 @@ class DishesController < ApplicationController
 
   def new
     @dish = current_user.dishes.new
+  end
+
+  def show
+    @menu_items = @dish.menu_items.includes(:menu).joins(:menu).merge(Menu.recent_first)
   end
 
   def edit; end

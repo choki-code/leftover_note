@@ -1,0 +1,40 @@
+<h1><span class="badge"><%= @dish.category_label %></span> <%= @dish.name %> の記録</h1>
+<p class="page-note">この料理を出した日の残食率と改善事項です（新しい順）。</p>
+
+<% if @menu_items.empty? %>
+  <p class="empty">まだ献立で使われていません。</p>
+<% else %>
+  <div class="table-scroll card">
+    <table>
+      <thead>
+        <tr>
+          <th>提供日</th>
+          <th>提供量</th>
+          <th>残食量</th>
+          <th>残食率</th>
+          <th>改善事項</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @menu_items.each do |item| %>
+          <tr class="rate-<%= item.rate_level %>">
+            <td><%= link_to l(item.menu.date_provided, format: :long), menu_path(item.menu) %></td>
+            <td><%= item.portion_size %> kg</td>
+            <% if item.leftover_rate.nil? %>
+              <td>未入力</td>
+              <td>—</td>
+            <% else %>
+              <td><%= item.weight_of_leftovers %> kg</td>
+              <td><%= number_to_percentage(item.leftover_rate * 100, precision: 1) %></td>
+            <% end %>
+            <td><%= simple_format(item.items_for_improvement) %></td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>
+
+<div class="actions">
+  <%= link_to "料理マスタに戻る", dishes_path %>
+</div>
