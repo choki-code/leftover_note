@@ -20,7 +20,10 @@
       <tbody>
         <% @menus.each do |menu| %>
           <tr>
-            <td><%= link_to l(menu.date_provided, format: :long), menu_path(menu) %></td>
+            <td>
+              <%= link_to l(menu.date_provided, format: :long), menu_path(menu) %>
+              <% if menu.excluded_from_stats? %><span class="badge">対象外</span><% end %>
+            </td>
             <td><%= menu.menu_items.size %>品</td>
             <td>
               <% if menu.leftover_rate.nil? %>

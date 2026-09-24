@@ -146,4 +146,12 @@ RSpec.describe Menu, type: :model do
       expect(menu.leftovers_missing?).to be false
     end
   end
+
+  describe "集計対象外のチェックを外したとき" do
+    it "理由も消える" do
+      menu = build_menu({ excluded_from_stats: true, exclusion_reason: "学級閉鎖" }).tap(&:save!)
+      menu.update!(excluded_from_stats: false)
+      expect(menu.reload.exclusion_reason).to be_nil
+    end
+  end
 end

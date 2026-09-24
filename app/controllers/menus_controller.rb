@@ -45,7 +45,7 @@ class MenusController < ApplicationController
   end
 
   def menu_params
-    params.require(:menu).permit(:date_provided, :attendance_count,
+    params.require(:menu).permit(:date_provided, :attendance_count, :excluded_from_stats, :exclusion_reason,
     menu_items_attributes: [ :id, :dish_id, :portion_size ])
   end
 

@@ -14,6 +14,7 @@ class Menu < ApplicationRecord
   validates :exclusion_reason, presence: true, if: :excluded_from_stats?
   validate :must_have_at_least_one_item
   validate :dish_must_not_be_duplicated
+  before_validation :clear_exclusion_reason, unless: :excluded_from_stats?
 
   # 3-C その日の平均残食率 = 合計残食量 ÷ 合計提供量（品目ごとの率の平均ではない）
   # 未入力の品目は分母・分子の両方から外す。一部未入力の日も途中の値を出すため
@@ -32,6 +33,11 @@ class Menu < ApplicationRecord
   end
 
   private
+
+  # チェックを外したら理由も消す。集計に戻した日に、古い理由が残らないように
+  def clear_exclusion_reason
+    self.exclusion_reason = nil
+  end
 
   # 同じ料理を2回選ぶと DB の UNIQUE で落ちるので、その前に画面へ返す
   def dish_must_not_be_duplicated
