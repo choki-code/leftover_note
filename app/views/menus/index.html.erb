@@ -1,0 +1,44 @@
+<h1>献立一覧</h1>
+
+<div class="actions">
+  <%= link_to "献立を登録する", new_menu_path %>
+</div>
+
+<% if @menus.empty? %>
+  <p class="empty">まだ献立がありません。「献立を登録する」から始めてください。</p>
+<% else %>
+  <div class="table-scroll card">
+    <table>
+      <thead>
+        <tr>
+          <th>提供日</th>
+          <th>品数</th>
+          <th>平均残食率</th>
+          <th>残食</th>
+        </tr>
+      </thead>
+      <tbody>
+        <% @menus.each do |menu| %>
+          <tr>
+            <td><%= link_to l(menu.date_provided, format: :long), menu_path(menu) %></td>
+            <td><%= menu.menu_items.size %>品</td>
+            <td>
+              <% if menu.leftover_rate.nil? %>
+                —
+              <% else %>
+                <%= number_to_percentage(menu.leftover_rate * 100, precision: 1) %>
+              <% end %>
+            </td>
+            <td>
+              <% if menu.leftovers_missing? %>
+                <strong class="missing">未入力あり</strong>
+              <% else %>
+                入力済み
+              <% end %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+<% end %>

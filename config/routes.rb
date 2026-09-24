@@ -12,15 +12,15 @@ Rails.application.routes.draw do
     end
   end
 
-  root "dishes#index"
+  root "menus#index"
 
   resources :dishes, except: %i[show] do
     get :confirm_destroy, on: :member   # 2-D 削除前の確認画面
   end
 
-  # 3-A 献立の登録 / 3-F 詳細（一覧は #20、編集・削除は #19 で足す）
-  resources :menus, only: %i[new create show] do
-  resource :leftovers, only: %i[edit update]
+  # 3-A 献立の登録 / 3-C 一覧 / 3-F 詳細（編集・削除は #19 で足す）
+  resources :menus, only: %i[index new create show] do
+    resource :leftovers, only: %i[edit update]   # 4-A 残食の入力（献立ごと）
   end
 
   get "up" => "rails/health#show", as: :rails_health_check

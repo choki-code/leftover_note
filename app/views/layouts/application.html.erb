@@ -30,6 +30,7 @@
 
       <% if user_signed_in? %>
         <nav class="site-nav">
+          <%= link_to "献立一覧", menus_path %>
           <%= link_to "料理マスタ", dishes_path %>
           <%= link_to "学校情報", edit_user_registration_path %>
           <%= button_to "ログアウト", destroy_user_session_path, method: :delete, class: "linklike" %>
