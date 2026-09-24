@@ -19,7 +19,7 @@
       <% deletable = @menu_items.size > 1 %>
       <% @menu_items.each do |item| %>
         <tr class="rate-<%= item.rate_level %>">
-          <td><%= item.dish.name %></td>
+          <td><%= link_to item.dish.name, dish_path(item.dish) %></td>
           <td><%= item.portion_size %> kg</td>
           <% if item.leftover_rate.nil? %>
             <td>未入力</td>
