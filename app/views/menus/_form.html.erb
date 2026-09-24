@@ -21,10 +21,13 @@
       </thead>
       <tbody>
         <%= f.fields_for :menu_items do |item| %>
-          <tr>
+          <tr data-controller="dish-history" data-dish-history-url-value="<%= dishes_path %>">
             <td>
               <%= item.collection_select :dish_id, @dishes, :id, :name,
-                                        { include_blank: "選んでください" }, { "aria-label": "料理" } %>
+                                        { include_blank: "選んでください" },
+                                        { "aria-label": "料理",
+                                          data: { dish_history_target: "select", action: "change->dish-history#update" } } %>
+              <%= link_to "この料理の記録を見る", "#", hidden: true, data: { dish_history_target: "link" } %>
             </td>
             <td>
               <%= item.number_field :portion_size, step: 0.01, min: 0, "aria-label": "提供量（kg）" %>
