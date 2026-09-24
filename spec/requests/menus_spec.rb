@@ -193,4 +193,81 @@ RSpec.describe "献立", type: :request do
       expect(response.body).not_to include(menu_path(other_menu))
     end
   end
+  describe "編集・更新（#19）" do
+    before { sign_in user }
+
+    # ごはん（20kg・残食5kg）とカレー（30kg・未入力）の献立
+    let!(:menu) do
+      user.menus.build(date_provided: Date.new(2026, 9, 24)).tap do |m|
+        m.menu_items.build(dish: rice, portion_size: 20, weight_of_leftovers: 5)
+        m.menu_items.build(dish: curry, portion_size: 30)
+        m.save!
+      end
+    end
+    let(:rice_item) { menu.menu_items.find_by!(dish: rice) }
+    let(:curry_item) { menu.menu_items.find_by!(dish: curry) }
+
+    # フォームから届く形のパラメータ
+    def update_params(rows)
+      items = rows.each_with_index.to_h { |row, i| [ i.to_s, row ] }
+      { menu: { date_provided: menu.date_provided.to_s, menu_items_attributes: items } }
+    end
+
+    it "編集画面に既存の品目が id つきで入っている" do
+      get edit_menu_path(menu)
+      expect(response).to have_http_status(:ok)
+      assert_select "input[type=hidden][name$='[id]'][value=?]", rice_item.id.to_s
+      assert_select "input[type=hidden][name$='[id]'][value=?]", curry_item.id.to_s
+    end
+
+    it "提供量を直すと、品目は増えずに更新され、詳細に戻る" do
+      expect {
+        patch menu_path(menu), params: update_params([ { id: curry_item.id, portion_size: "25" } ])
+      }.not_to change(MenuItem, :count)
+      expect(response).to redirect_to(menu_path(menu))
+      expect(curry_item.reload.portion_size).to eq(25)
+    end
+
+    it "空の行に料理を入れると品目を追加できる" do
+      soup = create(:dish, user: user, name: "みそ汁", category: "soup")
+      expect {
+        patch menu_path(menu), params: update_params([ { dish_id: soup.id, portion_size: "10" } ])
+      }.to change(MenuItem, :count).by(1)
+      expect(response).to redirect_to(menu_path(menu))
+    end
+
+    it "提供量を残食量より下げると 422 で、変わらない（4-D が update でも効く）" do
+      patch menu_path(menu), params: update_params([ { id: rice_item.id, portion_size: "3" } ])
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("を超えられません")
+      expect(rice_item.reload.portion_size).to eq(20)
+    end
+
+    it "料理を付け替えて重複すると 422 で、変わらない" do
+      patch menu_path(menu), params: update_params([ { id: curry_item.id, dish_id: rice.id } ])
+      expect(response).to have_http_status(:unprocessable_content)
+      expect(response.body).to include("同じ料理を2回選んでいます")
+      expect(curry_item.reload.dish).to eq(curry)
+    end
+
+    it "論理削除した料理が入っていても、編集画面の選択肢に残る" do
+      rice.update!(deleted_at: Time.current)
+      get edit_menu_path(menu)
+      assert_select "option[value=?]", rice.id.to_s
+    end
+
+    # 404 のあとはログインのセッションが保存されないので、1つの it でリクエストは1回だけにする
+    it "他人の献立の編集画面は 404" do
+      other_menu = create(:menu, user: create(:user))
+      get edit_menu_path(other_menu)
+      expect(response).to have_http_status(:not_found)
+    end
+
+    it "他人の献立は更新できず 404" do
+      other_menu = create(:menu, user: create(:user))
+      patch menu_path(other_menu), params: { menu: { attendance_count: "1" } }
+      expect(response).to have_http_status(:not_found)
+      expect(other_menu.reload.attendance_count).to be_nil
+    end
+  end
 end

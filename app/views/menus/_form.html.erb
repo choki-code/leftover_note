@@ -1,0 +1,42 @@
+<%= form_with model: @menu do |f| %>
+  <%= error_summary(@menu) %>
+
+  <div class="field">
+    <%= f.label :date_provided %>
+    <%= f.date_field :date_provided %>
+  </div>
+
+  <div class="field">
+    <%= f.label :attendance_count, "実食数（任意）" %>
+    <%= f.number_field :attendance_count, min: 0 %>
+  </div>
+
+  <div class="table-scroll card">
+    <table>
+      <thead>
+        <tr>
+          <th>料理</th>
+          <th>提供量（kg）</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= f.fields_for :menu_items do |item| %>
+          <tr>
+            <td>
+              <%= item.collection_select :dish_id, @dishes, :id, :name,
+                                        { include_blank: "選んでください" }, { "aria-label": "料理" } %>
+            </td>
+            <td>
+              <%= item.number_field :portion_size, step: 0.01, min: 0, "aria-label": "提供量（kg）" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions">
+    <%= f.submit %>
+    <%= link_to "やめる", @menu.persisted? ? menu_path(@menu) : root_path %>
+  </div>
+<% end %>

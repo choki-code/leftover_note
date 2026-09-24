@@ -12,9 +12,11 @@
         <th>提供量</th>
         <th>残食量</th>
         <th>残食率</th>
+        <th>操作</th>
       </tr>
     </thead>
     <tbody>
+      <% deletable = @menu_items.size > 1 %>
       <% @menu_items.each do |item| %>
         <tr class="rate-<%= item.rate_level %>">
           <td><%= item.dish.name %></td>
@@ -26,6 +28,13 @@
             <td><%= item.weight_of_leftovers %> kg</td>
             <td><%= number_to_percentage(item.leftover_rate * 100, precision: 1) %></td>
           <% end %>
+          <td>
+            <% if deletable %>
+              <% message = item.weight_of_leftovers.present? ? "「#{item.dish.name}」の残食記録と改善事項も消えます。削除しますか？" : "「#{item.dish.name}」を献立から削除しますか？" %>
+              <%= button_to "削除", menu_menu_item_path(@menu, item), method: :delete,
+                            class: "linklike", form: { data: { turbo_confirm: message } } %>
+            <% end %>
+          </td>
         </tr>
       <% end %>
     </tbody>
@@ -34,5 +43,6 @@
 
 <div class="actions">
   <%= link_to "残食を入力する", edit_menu_leftovers_path(@menu) %>
+  <%= link_to "献立を編集する", edit_menu_path(@menu) %>
   <%= link_to "続けて献立を登録する", new_menu_path %>
 </div>
