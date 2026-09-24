@@ -18,9 +18,10 @@ Rails.application.routes.draw do
     get :confirm_destroy, on: :member   # 2-D 削除前の確認画面
   end
 
-  # 3-A 献立の登録 / 3-C 一覧 / 3-F 詳細（編集・削除は #19 で足す）
-  resources :menus, only: %i[index new create show] do
+  # 3-A 登録 / 3-C 一覧 / 3-F 詳細 / 品目の編集（#19）
+  resources :menus, only: %i[index new create show edit update] do
     resource :leftovers, only: %i[edit update]   # 4-A 残食の入力（献立ごと）
+    resources :menu_items, only: %i[destroy]     # #19 品目を1品ずつ削除
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
