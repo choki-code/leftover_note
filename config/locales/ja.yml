@@ -26,6 +26,8 @@ ja:
       menu/menu_items:
         dish: 料理
         portion_size: 提供量(kg)
+        weight_of_leftovers: 残食量(kg)
+        items_for_improvement: 改善事項
     errors:
       models:
         dish:

@@ -19,7 +19,9 @@ Rails.application.routes.draw do
   end
 
   # 3-A 献立の登録 / 3-F 詳細（一覧は #20、編集・削除は #19 で足す）
-  resources :menus, only: %i[new create show]
+  resources :menus, only: %i[new create show] do
+  resource :leftovers, only: %i[edit update]
+  end
 
   get "up" => "rails/health#show", as: :rails_health_check
 end

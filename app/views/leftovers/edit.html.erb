@@ -1,0 +1,37 @@
+<h1><%= l @menu.date_provided, format: :long %>の献立：残食を入力</h1>
+
+<%= form_with model: @menu, url: menu_leftovers_path(@menu), method: :patch do |f| %>
+  <%= error_summary(@menu) %>
+
+  <div class="table-scroll card">
+    <table>
+      <thead>
+        <tr>
+          <th>料理</th>
+          <th>提供量</th>
+          <th>残食量（kg）</th>
+          <th>改善事項</th>
+        </tr>
+      </thead>
+      <tbody>
+        <%= f.fields_for :menu_items, @menu_items do |item| %>
+          <tr>
+            <td><%= item.object.dish.name %></td>
+            <td><%= item.object.portion_size %> kg</td>
+            <td>
+              <%= item.number_field :weight_of_leftovers, step: 0.01, min: 0, max: item.object.portion_size, "aria-label": "残食量（kg）" %>
+            </td>
+            <td>
+              <%= item.text_area :items_for_improvement, rows: 2, placeholder: "例：味が濃かった。次回は塩分を控える", "aria-label": "改善事項" %>
+            </td>
+          </tr>
+        <% end %>
+      </tbody>
+    </table>
+  </div>
+
+  <div class="actions">
+    <%= f.submit "保存する" %>
+    <%= link_to "やめる", menu_path(@menu) %>
+  </div>
+<% end %>
