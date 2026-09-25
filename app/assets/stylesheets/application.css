@@ -89,6 +89,42 @@ th { background: #f0f2f5; font-weight: 600; white-space: nowrap; }
   white-space: nowrap;
 }
 
+/* ---- フォーム ---- */
+form .field { margin-bottom: 0.9rem; }
+label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.2rem; }
+input[type="text"], input[type="email"], input[type="password"], input[type="number"],
+input[type="date"], select, textarea {
+  width: 100%;
+  max-width: 26rem;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid #c4c9cf;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+}
+textarea { min-height: 4.5rem; }
+.checkbox-field { display: flex; align-items: center; gap: 0.4rem; }
+.checkbox-field label { margin: 0; }
+.checkbox-field input { width: auto; }
+
+button, input[type="submit"], .btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-danger, button.btn-danger { background: var(--high); border-color: var(--high); }
+.linklike, button.linklike {
+  background: none; border: none; color: var(--accent); padding: 0;
+  font-size: 0.9rem; text-decoration: underline; cursor: pointer;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-top: 1rem; }
+
 /* ---- 絞り込み（3-E） ---- */
 .filter { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
 .filter .field { margin: 0; }
