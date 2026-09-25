@@ -1,9 +1,128 @@
-# This file should ensure the existence of records required to run the application in every environment (production,
-# development, test). The code here should be idempotent so that it can be executed at any point in every environment.
-# The data can then be loaded with the bin/rails db:seed command (or created alongside the database with db:setup).
-#
-# Example:
-#
-#   ["Action", "Comedy", "Drama", "Horror"].each do |genre_name|
-#     MovieGenre.find_or_create_by!(name: genre_name)
-#   end
+# 6-A デモデータ（2週間・給食実施日10日）。前職で実際に出していた献立をもとにしている
+# 何度実行しても同じ状態になる（冪等）: デモユーザーの献立を消してから作り直す
+
+demo = User.find_or_initialize_by(email: "demo@example.com")
+demo.assign_attributes(password: "demo-password", school_name: "ひまわり小学校", academic_year: "2026", current_enrollment: 300)
+demo.save!
+
+# 料理名 => 区分（staple_food 主食 / main_dish 主菜 / side_dish 副菜 / soup 汁物 / dessert デザート）
+dish_data = {
+  "ごはん" => "staple_food",
+  "雑穀ごはん" => "staple_food",
+  "麦ごはん" => "staple_food",
+  "食パン(ジャム付き)" => "staple_food",
+  "パスタ" => "staple_food",
+  "中華麺" => "staple_food",
+  "うどん" => "staple_food",
+  "ライ麦パン" => "staple_food",
+  "メンチカツ" => "main_dish",
+  "ポークカレー" => "main_dish",
+  "チキン南蛮" => "main_dish",
+  "鶏の照り焼き" => "main_dish",
+  "鰆の西京焼き" => "main_dish",
+  "鯖のみそ煮" => "main_dish",
+  "豚の生姜焼き" => "main_dish",
+  "鮭のムニエル" => "main_dish",
+  "鶏唐揚げ" => "main_dish",
+  "オムレツ" => "main_dish",
+  "ミートソース" => "main_dish",
+  "ひじきの煮物" => "side_dish",
+  "海藻サラダ" => "side_dish",
+  "春雨サラダ" => "side_dish",
+  "ポテトサラダ" => "side_dish",
+  "ほうれん草の胡麻和え" => "side_dish",
+  "切り干し大根の煮物" => "side_dish",
+  "コールスロー" => "side_dish",
+  "イタリアンサラダ" => "side_dish",
+  "マカロニサラダ" => "side_dish",
+  "具だくさんみそ汁" => "soup",
+  "豆腐とわかめのみそ汁" => "soup",
+  "コンソメスープ" => "soup",
+  "粕汁" => "soup",
+  "豚汁" => "soup",
+  "コーンスープ" => "soup",
+  "けんちん汁" => "soup",
+  "ミネストローネ" => "soup",
+  "ポークビーンズ" => "soup",
+  "味噌ラーメン" => "soup",
+  "梨ゼリー" => "dessert",
+  "みかんヨーグルト" => "dessert"
+}.freeze
+
+# 1日分 = { date:, excluded:（対象外の理由・任意）, items: [ [料理名, 提供量kg, 残食量kg, 改善事項（任意）], … ] }
+# 提供量は320人分（児童300人＋教員20人）
+menu_data = [
+  { date: "2026-09-07", items: [
+    [ "ごはん", 48.0, 1.8 ],
+    [ "鶏の照り焼き", 21.0, 1.2 ],
+    [ "ひじきの煮物", 11.0, 3.4, "甘みが足りず残りが多い。次回はにんじんを増やす" ],
+    [ "豆腐とわかめのみそ汁", 51.0, 2.0 ]
+  ] },
+  { date: "2026-09-08", excluded: "学級閉鎖（3クラス欠席）", items: [
+    [ "ごはん", 48.0, 6.5 ],
+    [ "けんちん汁", 57.5, 9.8 ]
+  ] },
+  { date: "2026-09-09", items: [
+    [ "ごはん", 48.0, 1.0 ],
+    [ "鰆の西京焼き", 19.0, 1.5 ],
+    [ "ほうれん草の胡麻和え", 11.0, 2.3 ],
+    [ "豚汁", 57.5, 0.8 ]
+  ] },
+  { date: "2026-09-10", items: [
+    [ "麦ごはん", 48.0, 1.9 ],
+    [ "ポークカレー", 57.5, 0.4 ],
+    [ "海藻サラダ", 13.0, 3.4, "海藻と茹でたきゅうりとブロッコリーを入れたが、海藻の残食が目立った。海藻の食感とドレッシングの酸味を苦手とする児童が多いよう。次回コーンを入れて甘味と見た目を改善する" ],
+    [ "コンソメスープ", 51.0, 2.1 ]
+  ] },
+  { date: "2026-09-11", items: [
+    [ "中華麺", 51.0, 0.9 ],
+    [ "鶏の照り焼き", 21.0, 1.1 ],
+    [ "マカロニサラダ", 14.5, 3.4, "時間がたつとマカロニがマヨネーズなどの水分を吸って全体がパサつくことから、次回からは、茹でたマカロニにオリーブオイルを少量絡ませてから調味しすることで水分を吸いパサつくのを防ぐ。" ],
+    [ "味噌ラーメン", 64.0, 2.0 ]
+  ] },
+  { date: "2026-09-14", items: [
+    [ "ライ麦パン", 22.5, 1.8 ],
+    [ "メンチカツ", 19.0, 0.9 ],
+    [ "ポテトサラダ", 16.0, 3.4 ],
+    [ "ミネストローネ", 51.0, 1.5, "酸味を抑えるためにケチャップの量を調整し、野菜も玉ねぎは特にじっくり炒めたことで野菜の甘味をより引き出せたことで残食量が比較的抑えられた。" ]
+  ] },
+  { date: "2026-09-15", items: [
+    [ "ごはん", 48.0, 1.4 ],
+    [ "豚の生姜焼き", 21.0, 0.7 ],
+    [ "切り干し大根の煮物", 11.0, 3.4, "切り干し大根は食べやすくカットして提供。しかし、繊維質な食感や干し野菜特有の香りを苦手とする児童も多い。戻した後の加熱時間を長くしつつ水分が飛びすぎないよう注意。（落とし蓋、火加減）。旨みが出て尚且つ保水しやすい椎茸や油揚げを入れる。" ],
+    [ "粕汁", 51.0, 1.6, "酒粕の独特な風味を苦手としやすいため、まろやかな甘みのある白味噌を使用。また、酒粕のざらつきも残食につながりやすいため、だし汁と一緒にフープロでペースト状にしてから加えた。粕汁特有の風味がマイルドになり食べやすくなったことで、比較的残食は抑えられたと考える。" ]
+  ] },
+  { date: "2026-09-16", items: [
+    [ "雑穀ごはん", 48.0, 1.5 ],
+    [ "鶏唐揚げ", 22.5, 0.5 ],
+    [ "春雨サラダ", 14.5, 2.4 ],
+    [ "具だくさんみそ汁", 57.5, 1.7 ]
+  ] },
+  { date: "2026-09-17", items: [
+    [ "パスタ", 48.0, 1.0 ],
+    [ "オムレツ", 16.0, 1.2 ],
+    [ "コールスロー", 14.5, 3.4, "全ての食材の水切りは丁寧に行ったが時間が経つとマヨネーズがベチャついたことが残食に繋がったと考える。ベチャつき対策としてあらかじめマヨネーズに絞ったツナを混ぜ合わせておき野菜と和える。マヨネーズの量も減らす。" ],
+    [ "ミートソース", 32.0, 0.9 ],
+    [ "みかんヨーグルト", 22.5, 0.6 ]
+  ] },
+  { date: "2026-09-18", items: [
+    [ "食パン(ジャム付き)", 22.5, 1.1 ],
+    [ "鮭のムニエル", 19.0, 1.0 ],
+    [ "イタリアンサラダ", 14.5, 0.8, "手作りドレッシングにはりんご酢と玉ねぎ、バジルを少量入れ酸味をマイルドにしつつ香草の風味をプラスした。市販のドレッシングの時よりも残食が少なかった。酸味を抑え野菜の甘味を自然と味わえるドレッシングが人気であることから残食率の低下に大きく貢献できると考える。" ],
+    [ "ポークビーンズ", 38.5, 4.0 ],
+    [ "梨ゼリー", 19.0, 0.0 ]
+  ] }
+].freeze
+
+dishes = dish_data.to_h do |name, category|
+  [ name, demo.dishes.alive.find_or_create_by!(name: name) { |dish| dish.category = category } ]
+end
+
+demo.menus.destroy_all
+menu_data.each do |data|
+  menu = demo.menus.build(date_provided: data[:date], excluded_from_stats: data[:excluded].present?, exclusion_reason: data[:excluded])
+  data[:items].each do |name, portion, leftovers, note|
+    menu.menu_items.build(dish: dishes.fetch(name), portion_size: portion, weight_of_leftovers: leftovers, items_for_improvement: note)
+  end
+  menu.save!
+end
