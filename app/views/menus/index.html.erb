@@ -4,6 +4,26 @@
   <%= link_to "献立を登録する", new_menu_path %>
 </div>
 
+<%= form_with url: menus_path, method: :get, class: "filter" do |f| %>
+  <div class="field">
+    <%= f.label :from, "開始日" %>
+    <%= f.date_field :from, value: params[:from] %>
+  </div>
+  <div class="field">
+    <%= f.label :to, "終了日" %>
+    <%= f.date_field :to, value: params[:to] %>
+  </div>
+  <div class="field">
+    <%= f.label :dish_id, "料理" %>
+    <%= f.select :dish_id, @filter_dishes.map { |dish| [dish.deleted? ? "#{dish.name}（削除済み）" : dish.name, dish.id] },
+      { include_blank: "すべての料理", selected: params[:dish_id] } %>
+  </div>
+  <div class="actions">
+    <%= f.submit "絞り込む", name: nil %>
+    <%= link_to "条件をクリア", menus_path %>
+  </div>
+<% end %>
+
 <% if @menus.empty? %>
   <p class="empty">まだ献立がありません。「献立を登録する」から始めてください。</p>
 <% else %>
