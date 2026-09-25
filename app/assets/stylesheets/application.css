@@ -77,6 +77,18 @@ th { background: #f0f2f5; font-weight: 600; white-space: nowrap; }
 
 .missing { color: #b42318; font-weight: bold; }
 
+/* ---- バッジ ---- */
+.badge {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
 /* ---- 絞り込み（3-E） ---- */
 .filter { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
 .filter .field { margin: 0; }
