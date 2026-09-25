@@ -75,7 +75,7 @@ th { background: #f0f2f5; font-weight: 600; white-space: nowrap; }
 .rate-low { color: var(--low); }
 .rate-unrecorded { color: var(--muted); }
 
-.missing { color: #b42318; font-weight: bold; }
+.missing { color: var(--high); font-weight: bold; }
 
 /* ---- バッジ ---- */
 .badge {
