@@ -62,4 +62,47 @@ RSpec.describe "料理の履歴", type: :request do
     get dish_path(other_dish)
     expect(response).to have_http_status(:not_found)
   end
+
+  describe "残食率の比較グラフ（#55）" do
+    # 集計対象外の日（学級閉鎖など）を作る
+    def serve_excluded(date, leftovers:)
+      menu = user.menus.build(date_provided: date, excluded_from_stats: true, exclusion_reason: "学級閉鎖")
+      menu.menu_items.build(dish: dish, portion_size: 20, weight_of_leftovers: leftovers)
+      menu.tap(&:save!)
+    end
+
+    # グラフに並んだ日付を、上から順に取り出す
+    def chart_dates
+      response.body.scan(%r{<div class="bar-label">\s*<span>([^<]+)</span>}).flatten
+    end
+
+    it "対象外の日と未入力の日を除き、新しい順に棒が並ぶ" do
+      serve(Date.new(2026, 9, 1), leftovers: 2)
+      serve(Date.new(2026, 9, 15), leftovers: 6)
+      serve_excluded(Date.new(2026, 9, 8), leftovers: 10)
+      serve(Date.new(2026, 9, 22))
+      get dish_path(dish)
+      expect(chart_dates).to eq([ "2026年09月15日(火)", "2026年09月01日(火)" ])
+    end
+
+    it "残食率の分だけ棒が伸び、高い日は赤になる" do
+      serve(Date.new(2026, 9, 15), leftovers: 6)
+      get dish_path(dish)
+      assert_select "div.bar-fill.rate-high[style=?]", "width: 30.0%"
+    end
+
+    it "棒の下に改善事項が出る" do
+      serve(Date.new(2026, 9, 15), leftovers: 6, note: "量を減らす")
+      get dish_path(dish)
+      assert_select "p.bar-note", text: "量を減らす"
+    end
+
+    it "比べられる記録が無いときは、グラフの代わりにメッセージが出る" do
+      serve_excluded(Date.new(2026, 9, 8), leftovers: 10)
+      serve(Date.new(2026, 9, 22))
+      get dish_path(dish)
+      expect(response.body).to include("比べられる記録がまだありません")
+      assert_select "div.bar-row", count: 0
+    end
+  end
 end
