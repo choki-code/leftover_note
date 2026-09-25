@@ -125,6 +125,15 @@ button, input[type="submit"], .btn {
 }
 .actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-top: 1rem; }
 
+/* ---- フラッシュ・エラー（6-C） ---- */
+.flash { padding: 0.6rem 0.8rem; border-radius: 6px; margin: 0 0 1rem; font-size: 0.9rem; }
+.flash.notice { background: var(--low-bg); border: 1px solid #b7d8c4; color: #1d5c3e; }
+.flash.alert { background: var(--high-bg); border: 1px solid #e3b7b2; color: var(--high); }
+.error-summary, #error_explanation { background: var(--high-bg); border: 1px solid #e3b7b2; border-radius: 6px; padding: 0.6rem 0.8rem; margin-bottom: 1rem; }
+.error-summary p, #error_explanation h2 { margin: 0 0 0.3rem; font-size: 1rem; font-weight: 700; color: var(--high); }
+.error-summary ul, #error_explanation ul { margin: 0; padding-left: 1.2rem; color: var(--high); font-size: 0.9rem; }
+.field_with_errors input, .field_with_errors select { border-color: var(--high); }
+
 /* ---- 絞り込み（3-E） ---- */
 .filter { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
 .filter .field { margin: 0; }
