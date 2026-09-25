@@ -119,6 +119,7 @@ button, input[type="submit"], .btn {
   cursor: pointer;
 }
 .btn-danger, button.btn-danger { background: var(--high); border-color: var(--high); }
+.btn-sub, button.btn-sub { background: #fff; color: var(--accent); }
 .linklike, button.linklike {
   background: none; border: none; color: var(--accent); padding: 0;
   font-size: 0.9rem; text-decoration: underline; cursor: pointer;
