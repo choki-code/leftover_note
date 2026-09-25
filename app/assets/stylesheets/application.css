@@ -12,3 +12,8 @@ tr.rate-high   { background: #fde2e2; }
 tr.rate-middle { background: #fff4cc; }
 tr.rate-low    { background: #e3f5e1; }
 .missing { color: #b42318; font-weight: bold; }
+
+/* ---- 絞り込み（3-E） ---- */
+.filter { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
+.filter .field { margin: 0; }
+.filter input, .filter select { max-width: 12rem; }

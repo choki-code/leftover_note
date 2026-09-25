@@ -270,4 +270,63 @@ RSpec.describe "献立", type: :request do
       expect(other_menu.reload.attendance_count).to be_nil
     end
   end
+
+  describe "絞り込み（#24）" do
+    before { sign_in user }
+
+    let!(:sep1)  { create(:menu, user: user, date_provided: Date.new(2026, 9, 1),  menu_items: [ build(:menu_item, menu: nil, dish: rice) ]) }
+    let!(:sep15) { create(:menu, user: user, date_provided: Date.new(2026, 9, 15), menu_items: [ build(:menu_item, menu: nil, dish: rice), build(:menu_item, menu: nil, dish: curry) ]) }
+    let!(:sep30) { create(:menu, user: user, date_provided: Date.new(2026, 9, 30), menu_items: [ build(:menu_item, menu: nil, dish: curry) ]) }
+
+    # "/menus/1" が "/menus/15" に含まれてしまわないよう、閉じの " まで見る
+    def listed?(menu)
+      response.body.include?("href=\"#{menu_path(menu)}\"")
+    end
+
+    it "開始日と終了日の両方で、その期間だけ出る" do
+      get menus_path(from: "2026-09-10", to: "2026-09-20")
+      expect([ listed?(sep1), listed?(sep15), listed?(sep30) ]).to eq([ false, true, false ])
+    end
+
+    it "開始日だけなら、その日以降がすべて出る" do
+      get menus_path(from: "2026-09-10")
+      expect([ listed?(sep1), listed?(sep15), listed?(sep30) ]).to eq([ false, true, true ])
+    end
+
+    it "終了日だけなら、メッセージを出して日付では絞らない" do
+      get menus_path(to: "2026-09-20")
+      expect(response.body).to include("開始日も入れてください")
+      expect([ listed?(sep1), listed?(sep15), listed?(sep30) ]).to eq([ true, true, true ])
+    end
+
+    it "開始日が終了日より後なら、メッセージを出して日付では絞らない" do
+      get menus_path(from: "2026-09-30", to: "2026-09-01")
+      expect(response.body).to include("開始日は終了日より前")
+      expect([ listed?(sep1), listed?(sep15), listed?(sep30) ]).to eq([ true, true, true ])
+    end
+
+    # includes と joins を混ぜると品目が1品だけ読み込まれる落とし穴の見張り
+    it "料理で絞っても、献立の品数は全品のまま" do
+      get menus_path(dish_id: curry.id)
+      expect([ listed?(sep1), listed?(sep15), listed?(sep30) ]).to eq([ false, true, true ])
+      expect(response.body).to include("2品")
+    end
+
+    it "消した料理も選択肢に出て、それで絞り込める" do
+      curry.update!(deleted_at: Time.current)
+      get menus_path(dish_id: curry.id)
+      expect(response.body).to include("カレー（削除済み）")
+      expect([ listed?(sep1), listed?(sep15), listed?(sep30) ]).to eq([ false, true, true ])
+    end
+
+    it "絞り込んだあとも、入力欄に条件が残る" do
+      get menus_path(from: "2026-09-10", to: "2026-09-20")
+      expect(response.body).to include('value="2026-09-10"', 'value="2026-09-20"')
+    end
+
+    it "日付でない文字が来てもエラー画面にならない" do
+      get menus_path(from: "abc")
+      expect(response).to have_http_status(:ok)
+    end
+  end
 end
