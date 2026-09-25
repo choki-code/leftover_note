@@ -36,6 +36,25 @@ body {
 
 a { color: var(--accent); }
 
+/* ---- ヘッダー・ナビ ---- */
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  padding: 0.75rem 1rem;
+}
+.site-header-inner { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; align-items: baseline; }
+.site-title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.site-title a { text-decoration: none; color: var(--text); }
+.school-label { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.site-nav { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.9rem; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 1rem; }
+.site-footer { padding: 2rem 1rem; text-align: center; color: var(--muted); font-size: 0.8rem; }
+
+h1 { font-size: 1.3rem; margin: 0 0 0.25rem; }
+h2 { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; }
+.page-note { color: var(--muted); font-size: 0.85rem; margin-top: 0; }
+
 tr.rate-high   { background: #fde2e2; }
 tr.rate-middle { background: #fff4cc; }
 tr.rate-low    { background: #e3f5e1; }
