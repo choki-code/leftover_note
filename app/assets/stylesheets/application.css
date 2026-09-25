@@ -140,6 +140,16 @@ button, input[type="submit"], .btn {
 .filter .field { margin: 0; }
 .filter input, .filter select { max-width: 12rem; }
 
+/* ---- 棒グラフ（ライブラリを使わず div の幅で描く） ---- */
+.bar-row { display: grid; grid-template-columns: 1fr; gap: 0.15rem; margin-bottom: 0.7rem; }
+.bar-label { font-size: 0.85rem; display: flex; justify-content: space-between; gap: 0.5rem; }
+.bar-track { background: #eceff1; border-radius: 4px; height: 1.1rem; overflow: hidden; }
+.bar-fill { height: 100%; background: var(--accent); }
+.bar-fill.rate-high { background: var(--high); }
+.bar-fill.rate-middle { background: var(--middle); }
+.bar-note { margin: 0; font-size: 0.8rem; color: var(--muted); }
+.card h2 { margin-top: 0; }
+
 /* ---- スマホ幅（6-B） ---- */
 @media (max-width: 639px) {
   td input[type="number"] { width: 6rem; }

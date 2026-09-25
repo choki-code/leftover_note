@@ -4,6 +4,27 @@
 <% if @menu_items.empty? %>
   <p class="empty">まだ献立で使われていません。</p>
 <% else %>
+  <div class="card">
+    <h2>残食率の比較</h2>
+    <% if @chart_items.empty? %>
+      <p class="empty">比べられる記録がまだありません（集計対象外の日と、残食が未入力の日は含めません）。</p>
+    <% else %>
+      <% @chart_items.each do |item| %>
+        <div class="bar-row">
+          <div class="bar-label">
+            <span><%= l item.menu.date_provided, format: :long %></span>
+            <span><%= number_to_percentage(item.leftover_rate * 100, precision: 1) %></span>
+          </div>
+          <div class="bar-track">
+            <div class="bar-fill rate-<%= item.rate_level %>" style="width: <%= (item.leftover_rate * 100).round(1) %>%"></div>
+          </div>
+          <% if item.items_for_improvement.present? %>
+            <p class="bar-note"><%= item.items_for_improvement %></p>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
   <div class="table-scroll card">
     <table>
       <thead>

@@ -11,6 +11,7 @@ class DishesController < ApplicationController
 
   def show
     @menu_items = @dish.menu_items.includes(:menu).joins(:menu).merge(Menu.recent_first)
+    @chart_items = @menu_items.merge(Menu.for_stats).where.not(weight_of_leftovers: nil)
   end
 
   def edit; end
