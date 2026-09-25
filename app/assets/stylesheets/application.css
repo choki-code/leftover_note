@@ -8,10 +8,131 @@
  *
  * Consider organizing styles into separate files for maintainability.
  */
-tr.rate-high   { background: #fde2e2; }
-tr.rate-middle { background: #fff4cc; }
-tr.rate-low    { background: #e3f5e1; }
-.missing { color: #b42318; font-weight: bold; }
+
+/* ---- 色・文字の土台 ---- */
+:root {
+  --text: #1f2933;
+  --muted: #6b7280;
+  --line: #e2e5e9;
+  --bg: #f7f8fa;
+  --accent: #2f6f4f;
+  --high: #c0392b;
+  --high-bg: #fdecea;
+  --middle: #b8860b;
+  --middle-bg: #fdf6e3;
+  --low: #2f6f4f;
+  --low-bg: #eef6f1;
+}
+
+* { box-sizing: border-box; }
+
+body {
+  margin: 0;
+  color: var(--text);
+  background: var(--bg);
+  font-family: system-ui, -apple-system, "Hiragino Sans", "Noto Sans JP", sans-serif;
+  line-height: 1.6;
+}
+
+a { color: var(--accent); }
+
+/* ---- ヘッダー・ナビ ---- */
+.site-header {
+  background: #fff;
+  border-bottom: 1px solid var(--line);
+  padding: 0.75rem 1rem;
+}
+.site-header-inner { display: flex; flex-wrap: wrap; gap: 0.25rem 1rem; align-items: baseline; }
+.site-title { margin: 0; font-size: 1.1rem; font-weight: 700; }
+.site-title a { text-decoration: none; color: var(--text); }
+.school-label { margin: 0; font-size: 0.85rem; color: var(--muted); }
+.site-nav { display: flex; flex-wrap: wrap; gap: 0.75rem; margin-top: 0.5rem; font-size: 0.9rem; }
+
+.container { max-width: 960px; margin: 0 auto; padding: 1rem; }
+.site-footer { padding: 2rem 1rem; text-align: center; color: var(--muted); font-size: 0.8rem; }
+
+h1 { font-size: 1.3rem; margin: 0 0 0.25rem; }
+h2 { font-size: 1.05rem; margin: 1.5rem 0 0.5rem; }
+.page-note { color: var(--muted); font-size: 0.85rem; margin-top: 0; }
+
+/* ---- カード・テーブル ---- */
+.card {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: 8px;
+  padding: 1rem;
+  margin-bottom: 1rem;
+}
+
+.table-scroll { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; background: #fff; font-size: 0.9rem; }
+th, td { padding: 0.5rem 0.6rem; border-bottom: 1px solid var(--line); text-align: left; vertical-align: top; }
+th { background: #f0f2f5; font-weight: 600; white-space: nowrap; }
+
+/* ---- 残食率の色分け（3-F） ---- */
+.rate-high { background: var(--high-bg); color: var(--high); font-weight: 700; }
+.rate-middle { background: var(--middle-bg); color: var(--middle); font-weight: 600; }
+.rate-low { color: var(--low); }
+.rate-unrecorded { color: var(--muted); }
+
+.missing { color: var(--high); font-weight: bold; }
+
+/* ---- バッジ ---- */
+.badge {
+  display: inline-block;
+  padding: 0.05rem 0.45rem;
+  border-radius: 999px;
+  font-size: 0.75rem;
+  border: 1px solid var(--line);
+  background: #fff;
+  color: var(--muted);
+  white-space: nowrap;
+}
+
+/* ---- フォーム ---- */
+form .field { margin-bottom: 0.9rem; }
+label { display: block; font-size: 0.85rem; font-weight: 600; margin-bottom: 0.2rem; }
+input[type="text"], input[type="email"], input[type="password"], input[type="number"],
+input[type="date"], select, textarea {
+  width: 100%;
+  max-width: 26rem;
+  padding: 0.45rem 0.5rem;
+  border: 1px solid #c4c9cf;
+  border-radius: 6px;
+  font-size: 1rem;
+  background: #fff;
+}
+textarea { min-height: 4.5rem; }
+.checkbox-field { display: flex; align-items: center; gap: 0.4rem; }
+.checkbox-field label { margin: 0; }
+.checkbox-field input { width: auto; }
+
+button, input[type="submit"], .btn {
+  display: inline-block;
+  padding: 0.5rem 1rem;
+  border: 1px solid var(--accent);
+  border-radius: 6px;
+  background: var(--accent);
+  color: #fff;
+  font-size: 0.95rem;
+  text-decoration: none;
+  cursor: pointer;
+}
+.btn-danger, button.btn-danger { background: var(--high); border-color: var(--high); }
+.linklike, button.linklike {
+  background: none; border: none; color: var(--accent); padding: 0;
+  font-size: 0.9rem; text-decoration: underline; cursor: pointer;
+}
+.actions { display: flex; flex-wrap: wrap; gap: 0.6rem; align-items: center; margin-top: 1rem; }
+
+/* ---- フラッシュ・エラー（6-C） ---- */
+.flash { padding: 0.6rem 0.8rem; border-radius: 6px; margin: 0 0 1rem; font-size: 0.9rem; }
+.flash.notice { background: var(--low-bg); border: 1px solid #b7d8c4; color: #1d5c3e; }
+.flash.alert { background: var(--high-bg); border: 1px solid #e3b7b2; color: var(--high); }
+.error-summary, #error_explanation { background: var(--high-bg); border: 1px solid #e3b7b2; border-radius: 6px; padding: 0.6rem 0.8rem; margin-bottom: 1rem; }
+.error-summary p, #error_explanation h2 { margin: 0 0 0.3rem; font-size: 1rem; font-weight: 700; color: var(--high); }
+.error-summary ul, #error_explanation ul { margin: 0; padding-left: 1.2rem; color: var(--high); font-size: 0.9rem; }
+.field_with_errors input, .field_with_errors select { border-color: var(--high); }
 
 /* ---- 絞り込み（3-E） ---- */
 .filter { display: flex; flex-wrap: wrap; gap: 0.75rem; align-items: flex-end; }
