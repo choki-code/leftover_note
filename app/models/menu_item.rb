@@ -42,6 +42,23 @@ class MenuItem < ApplicationRecord
             .first
   end
 
+  # 5-A 残食率が高い料理（合計残食量 ÷ 合計提供量）。
+  # 集計対象外の日・残食が未入力の品目・削除した料理は含めない
+  def self.ranking_for(user, period, limit: 5)
+    joins(:menu, :dish)
+      .merge(Menu.for_stats)
+      .merge(Dish.alive)
+      .where(menus: { user_id: user.id, date_provided: period })
+      .where.not(weight_of_leftovers: nil)
+      .group("menu_items.dish_id", "dishes.name")
+      .select("menu_items.dish_id",
+              "dishes.name AS dish_name",
+              "COUNT(*) AS served_count",
+              "SUM(menu_items.weight_of_leftovers) / SUM(menu_items.portion_size) AS rate")
+      .order("rate DESC", "dishes.name")
+      .limit(limit)
+  end
+
   private
 
   # 他人の料理 id をフォームに差し込まれても弾く。
