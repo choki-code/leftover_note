@@ -24,5 +24,8 @@ Rails.application.routes.draw do
     resources :menu_items, only: %i[destroy]     # #19 品目を1品ずつ削除
   end
 
+  # 5-A ランキング（#25）/ 年度ごとの平均残食率（#59）
+  resource :analysis, only: :show
+
   get "up" => "rails/health#show", as: :rails_health_check
 end

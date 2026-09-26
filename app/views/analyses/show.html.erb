@@ -1,0 +1,25 @@
+<h1>分析シート</h1>
+<p class="page-note">集計対象外の日と、残食が未入力の品目は含めません。</p>
+
+<div class="card">
+  <h2>年度ごとの平均残食率</h2>
+  <p class="empty">準備中です。</p>
+</div>
+
+<div class="card">
+  <% if @ranking.empty? %>
+    <p class="empty">今年度の記録がまだありません。</p>
+  <% else %>
+    <% @ranking.each do |row| %>
+      <div class="bar-row">
+        <div class="bar-label">
+          <span><%= link_to row.dish_name, dish_path(row.dish_id) %>（提供<%= row.served_count %>回）</span>
+          <span><%= number_to_percentage(row.rate * 100, precision: 1) %></span>
+        </div>
+        <div class="bar-track">
+          <div class="bar-fill" style="width: <%= (row.rate * 100).round(1) %>%"></div>
+        </div>
+      </div>
+    <% end %>
+  <% end %>
+</div>
