@@ -14,7 +14,17 @@ https://leftover-note.onrender.com
 
 ## スクリーンショット
 
-【ここに画像を貼る: 献立詳細 / 料理詳細（日ごとの棒グラフ）/ 分析シート】
+【献立詳細】
+
+![献立詳細](docs/screenshots/menu-show.png)
+
+【料理詳細（日ごとの棒グラフ）】
+
+![料理詳細](docs/screenshots/dish-show.png)
+
+【分析シート】
+
+![分析シート](docs/screenshots/analysis.png)
 
 ## 作った背景・課題
 
