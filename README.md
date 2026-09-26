@@ -70,12 +70,44 @@ https://leftover-note.onrender.com
 
 ## ER図
 
-【あなたが描く】
-<!--
-mermaid の erDiagram で書くと、GitHub 上で図として表示される。
-材料: users / dishes / menus / menu_items の4テーブルと、db/schema.rb 末尾の外部キー4本。
-描けたら、schema と合っているかレビューしてもらう。
--->
+```mermaid
+erDiagram
+    users ||--o{ dishes : "料理を登録する"
+    users ||--o{ menus : "献立を記録する"
+    menus ||--|{ menu_items : "品目（1品以上）"
+    dishes ||--o{ menu_items : "献立で使われる"
+
+    users {
+        bigint id PK
+        string email UK "ログイン用"
+        string school_name "学校名"
+        string academic_year "年度"
+        integer current_enrollment "全校児童数"
+    }
+    dishes {
+        bigint id PK
+        bigint user_id FK
+        string name "料理名（削除していない中で学校ごとに一意）"
+        string category "主食・主菜・副菜など"
+        datetime deleted_at "論理削除"
+    }
+    menus {
+        bigint id PK
+        bigint user_id FK
+        date date_provided "提供日（学校ごとに一意）"
+        boolean excluded_from_stats "集計対象外の日"
+        text exclusion_reason "対象外の理由"
+        integer attendance_count "出席数"
+    }
+    menu_items {
+        bigint id PK
+        bigint menu_id FK
+        bigint dish_id FK
+        decimal portion_size "提供量 kg（食缶の実測総重量）"
+        decimal weight_of_leftovers "残食量 kg（未入力は NULL）"
+        text items_for_improvement "改善事項"
+    }
+```
 
 ## 設計の選定理由・工夫した点
 
