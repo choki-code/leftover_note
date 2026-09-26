@@ -14,5 +14,6 @@ class AnalysesController < ApplicationController
       current_user,
       fiscal_year_start..fiscal_year_end
     )
+    @yearly_rates = MenuItem.yearly_rates_for(current_user)
   end
 end

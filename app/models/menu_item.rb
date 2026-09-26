@@ -58,6 +58,23 @@ class MenuItem < ApplicationRecord
       .order("rate DESC", "dishes.name")
       .limit(limit)
   end
+  # 年度（4/1〜3/31）。日付を3か月前にずらすと、その年が年度になる
+  # 例: 2027-03-31 → 2026-12-31 → 2026年度 / 2027-04-01 → 2027-01-01 → 2027年度
+  FISCAL_YEAR_SQL = "CAST(EXTRACT(YEAR FROM menus.date_provided - INTERVAL '3 months') AS integer)".freeze
+
+  # #59 年度ごとの平均残食率（合計残食量 ÷ 合計提供量）。
+  # 集計対象外の日・残食が未入力の品目は含めない。
+  # 削除した料理は含める（一度報告した年度の数字が、料理の削除で変わらないように）
+  def self.yearly_rates_for(user)
+    joins(:menu)
+      .merge(Menu.for_stats)
+      .where(menus: { user_id: user.id })
+      .where.not(weight_of_leftovers: nil)
+      .group(FISCAL_YEAR_SQL)
+      .select("#{FISCAL_YEAR_SQL} AS fiscal_year",
+              "SUM(menu_items.weight_of_leftovers) / SUM(menu_items.portion_size) AS rate")
+      .order("fiscal_year")
+  end
 
   private
 
