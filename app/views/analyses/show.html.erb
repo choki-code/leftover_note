@@ -2,6 +2,7 @@
 <p class="page-note">集計対象外の日と、残食が未入力の品目は含めません。</p>
 
 <div class="card">
+  <h2>年度ごとの平均残食率</h2>
   <% if @yearly_rates.empty? %>
     <p class="empty">まだ記録がありません。</p>
   <% else %>
@@ -23,6 +24,7 @@
 </div>
 
 <div class="card">
+  <h2>残食率が高い上位5品</h2>
   <% if @ranking.empty? %>
     <p class="empty">今年度の記録がまだありません。</p>
   <% else %>

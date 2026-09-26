@@ -23,6 +23,12 @@ RSpec.describe "分析シート", type: :request do
     expect(response).to redirect_to(new_user_session_path)
   end
 
+  it "2枚のカードに見出しが出る" do
+    sign_in user
+    get analysis_path
+    expect(response.body).to include("<h2>年度ごとの平均残食率</h2>", "<h2>残食率が高い上位5品</h2>")
+  end
+
   describe "残食率が高い上位5品" do
     # 「今年度」がテストを流す日で変わらないよう、今日を 2026-09-26 に固定する
     around { |example| travel_to(Time.zone.local(2026, 9, 26)) { example.run } }
