@@ -1,27 +1,114 @@
-# README
+# 残食ノート
 
-This README would normally document whatever steps are necessary to get the
-application up and running.
+> 学校給食の栄養士が、測って終わりになっている残食記録を、料理ごとに蓄積・比較して次の献立に活かせるようにするアプリ
 
-Things you may want to cover:
+## 公開URL
 
-- Ruby version
+https://leftover-note.onrender.com
 
-- System dependencies
+デモ用アカウント（デモデータ入り）
+- メールアドレス: `demo@example.com`
+- パスワード: `demo-password`
 
-- Configuration
+※ 無料プランのため、最初の表示に 1 分ほどかかることがあります。
 
-- Database creation
+## スクリーンショット
 
-- Database initialization
+【ここに画像を貼る: 献立詳細 / 料理詳細（日ごとの棒グラフ）/ 分析シート】
 
-- How to run the test suite
+## 作った背景・課題
 
-- Services (job queues, cache servers, search engines, etc.)
+【あなたが書く】
+<!--
+問い1: 前職で、残食をどう測り、その数字はどうなっていましたか？（「測って終わり」の具体的な場面）
+問い2: それで何が困りましたか？ 誰が困りましたか？
+問い3: このアプリで、何ができるようになれば解決しますか？
+→ 3〜6行で。数字や場面が1つ入ると伝わりやすい
+-->
 
-- Deployment instructions
+## 対象と前提
 
-- ...
+- 学校給食（昼食1回）の残食記録
+- 1ユーザー＝1校（1校固定で使う）
+- 提供量は、食缶の実測総重量（kg）を入力する
+- 残食率 ＝ 合計残食量 ÷ 合計提供量（1回ごとの率の平均ではない）
+
+## 主な機能
+
+- ユーザー認証（Devise）・学校情報の登録
+- 料理マスタ（主食・主菜・副菜などの区分つき。献立で使った料理は論理削除）
+- 献立の登録と、品目ごとの提供量・残食量の記録
+- 学級閉鎖などの日を「集計対象外」にできる（理由つき）
+- 献立一覧を、期間と料理で絞り込み
+- 献立フォームで、同じ料理の前回の記録と改善事項を表示
+- 料理詳細: 提供日ごとの残食率を棒グラフで比較
+- 分析シート: 今年度に残食率が高い上位5品／年度ごとの平均残食率
+
+## 使用技術
+
+- Ruby 3.4 / Rails 8.1
+- PostgreSQL
+- Hotwire（Turbo / Stimulus）
+- Devise（認証）
+- RSpec / FactoryBot（テスト）・RuboCop・GitHub Actions（CI）
+- Render（デプロイ）
+- グラフはライブラリを使わず、HTML/CSS（div の幅）で描画
+
+## ER図
+
+【あなたが描く】
+<!--
+mermaid の erDiagram で書くと、GitHub 上で図として表示される。
+材料: users / dishes / menus / menu_items の4テーブルと、db/schema.rb 末尾の外部キー4本。
+描けたら、schema と合っているかレビューしてもらう。
+-->
+
+## 設計の選定理由・工夫した点
+
+### 学年別の残食率を出さない
+
+【あなたが書く】
+<!-- #29 の完了条件で必須。ヒント: 学年ごとに残菜を分けて計量する運用が前提になり、現場の作業を増やすため -->
+
+### 【採用担当に読んでほしい工夫を、あと2つまで選んで書く】
+
+<!--
+候補（今日までに決めたこと）:
+- 「ワースト」と書かず「残食率が高い上位5品」にした理由
+- ランキングは削除した料理を除き、年度平均は含める（目的が違うので母数を変えた）
+- 利用者（管理栄養士）の声を受けて、全体の推移グラフ（#26）を料理ごとのグラフ（#55）に置き換えた
+- 率の定義を「合計 ÷ 合計」にそろえた
+それぞれ「何を決めた → なぜ → 捨てた案」の順で3〜4行
+-->
+
+## 今後の改善予定
+
+MVP では、次の機能をあえて入れていません。
+
+| 機能 | 入れなかった理由 |
+|---|---|
+| 学年別・料理区分別の集計 | 【あなたが書く】 |
+| 複数ユーザーと権限管理 | 【あなたが書く】 |
+| CSV・Excel 出力 | 【あなたが書く】 |
+| 栄養価計算 | 【あなたが書く】 |
+| 写真アップロード | 【あなたが書く】 |
+| PWA（オフライン入力） | 【あなたが書く】 |
+| 予定食数の記録 | 【あなたが書く】 |
+| 牛乳の残食記録 | 【あなたが書く】 |
+
+## ローカルでの動かし方
+
+```bash
+git clone https://github.com/choki-code/leftover_note.git
+cd leftover_note
+bundle install
+bin/rails db:setup   # DB 作成＋デモデータ投入
+bin/rails s
+```
+
+http://localhost:3000 を開き、上のデモ用アカウントでログインする。
+
+テスト: `bundle exec rspec` ／ Lint: `bundle exec rubocop`
 
 ## 開発の進め方
 
